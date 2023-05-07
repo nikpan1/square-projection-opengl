@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <array>
 #include "projection.cpp"
 
 int main() {
@@ -44,21 +45,27 @@ int main() {
     ImGui::StyleColorsDark();
 
     // --------------------------
-
     float positions[] = {
+        0.f, 1.f, 0.f, 0.01f,
+        1.f, 1.f, 0.f, 0.02f,
+        1.f, 0.f, 0.f, 0.03f,
+        0.f, 0.f, 0.f, 0.04f,
+        0.f, 1.f, 0.1f, 0.05f, 
+        1.f, 1.f, 0.1f, 0.06f,
+        1.f, 0.f, 0.1f, 0.07f,
+        0.f, 0.f, 0.1f, 0.09f
+    };
+    float aositions[] = {
         0.f, 1.f, 0.f,
         1.f, 1.f, 0.f,
         1.f, 0.f, 0.f,
         0.f, 0.f, 0.f,
-        0.f, 1.f, 1.f,
-        1.f, 1.f, 1.f,
-        1.f, 0.f, 1.f,
-        0.f, 0.f, 1.f
+        0.f, 1.f, 0.1f, 
+        1.f, 1.f, 0.1f,
+        1.f, 0.f, 0.1f,
+        0.f, 0.f, 0.1f
     };
-
-    for (int i = 0; i < sizeof(positions) / sizeof(float); i++) {
-        positions[i] *= 10.f;
-    }
+    for (int i = 0; i < sizeof(positions) / sizeof(float); i++) positions[i] *= 10.f;
 
     unsigned int indices[] = {
         0, 1, 2,
@@ -94,7 +101,7 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
     // index    |   size from 1 to 4    | type  | normalized?   | stride    |   offset
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
     unsigned int ibo;
@@ -110,12 +117,11 @@ int main() {
     auto uniformMtx = glGetUniformLocation(shader, "mtx");
     GLfloat color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-
-    // ---------------
+// ---------------
     float fov = 90.f;
     float near = .1f;
-    float far = 10.0f;
-    float zCam = -1.f;
+    float far = 100.0f;
+    float zCam = -14.f;
     glm::mat4 prj = glm::ortho(0.f, 800.f, 0.f, 600.f, near, far);
     glm::mat4 model = glm::mat4(1.0f); // Initialize as identity matrix for this example
     glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, near, far); // Example perspective projection
@@ -126,15 +132,15 @@ int main() {
         glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
     );
     
-    float x_angle = 45.0f;
-    float y_angle = 45.0f;  // rotate 45 degrees around the y-axis
+    float x_angle = 0.0f;
+    float y_angle = 0.0f;  // rotate 45 degrees around the y-axis
 
-        glm::mat4 x_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 y_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(y_angle), glm::vec3(1.0f, 1.0f, 0.0f));
-        // ------------------
+    glm::mat4 x_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(x_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 y_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(y_angle), glm::vec3(1.0f, 1.0f, 0.0f));
+// ------------------
         
         while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
-            glClearColor(0.3f, .1f, 0.4f, 1.0f);
+            glClearColor(0.3f, 0.1f, 0.4f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplGlfwGL3_NewFrame();
 
@@ -145,7 +151,7 @@ int main() {
                 ImGui::SliderFloat("Red", &color[0], 0.f, 1.f);
                 ImGui::SliderFloat("FOV", &fov, 0.0f, 360.0f);
                 ImGui::SliderFloat("near", &near, -2.0f, 2.0f);
-                ImGui::SliderFloat("far", &far, -100.0f, 100.0f);
+                ImGui::SliderFloat("far", &far, -100.0f, 1000.0f);
                 ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             }
 
