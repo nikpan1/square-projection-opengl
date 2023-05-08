@@ -6,7 +6,7 @@ uniform mat4 mtx;
 out float v_clr;
 void main()
 {
-	gl_Position = vec4(position[0], position[1], position[2], 0) * mtx;
+	gl_Position = vec4(position[0], position[1], position[2], 1) * mtx;
 	v_clr = position[3];
 }
 
