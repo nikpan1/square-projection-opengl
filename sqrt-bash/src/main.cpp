@@ -53,11 +53,11 @@ int main() {
         std::cout << "GLFW was not initialized\n";
         return -1;
     }
-
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    ;
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Window", NULL, NULL);
     if (!window) {
@@ -83,8 +83,6 @@ int main() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);      // ?
 
     unsigned int vao;
     glGenVertexArrays(1, &vao);
@@ -93,7 +91,7 @@ int main() {
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), &positions[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 72*sizeof(float), positions, GL_STATIC_DRAW);
 
     // index    |   size from 1 to 4    | type  | normalized?   | stride    |   offset
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -102,7 +100,7 @@ int main() {
     unsigned int ibo;
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36*sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
@@ -150,32 +148,24 @@ int main() {
                 //ImGui::SliderFloat("far", &far, -100.0f, 1000.0f);
                 ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             }
-/*
-             viewport = glm::lookAt(
-                glm::vec3(xc, yc, zc),
-                glm::vec3(xla, yla, zla),
-                glm::vec3(0, 1, 0)
-            ); 
-            
-             x_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(x_angle), glm::vec3(1.0f, 0.0f, 0.0f));
-            y_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(y_angle), glm::vec3(0.0f, 1.0f, 0.0f));
-            //projection = glm::perspective(glm::radians(fov), WIDTH/HEIGHT, near, far)*viewport*x_rotation*y_rotation;  
-            */
-            glm::mat4 scale = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
-        glm::mat4 rotate = glm::rotate((float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-        glm::mat4 translate = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
-        glm::mat4 model = translate * rotate * scale;
-        glm::mat4 view = glm::lookAt(
-            glm::vec3(0.0f, 0.0f, 2.0f), 
-            glm::vec3(0.0f, 0.0f, 0.0f), 
-            glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 projection = glm::perspective(glm::quarter_pi<float>(),WIDTH/HEIGHT, 0.01f, 10.0f);
-        glm::mat4 mvp = projection * view * model;
 
+            glm::mat4 scale = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::mat4 rotate = glm::rotate((float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::mat4 translate = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
+            glm::mat4 model = translate * rotate * scale;
+            glm::mat4 view = glm::lookAt(
+                glm::vec3(0.0f, 0.0f, 2.0f), 
+                glm::vec3(0.0f, 0.0f, 0.0f), 
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+
+            glm::mat4 projection = glm::perspective(glm::quarter_pi<float>(),WIDTH/HEIGHT, 0.01f, 100.0f);
+            glm::mat4 mvp = projection * view * model;
 
             glUniformMatrix4fv(uniformMtx, 1, GL_FALSE, glm::value_ptr(mvp));
             glUniform4f(uniformColor, color[0], color[1], color[2], color[3]);
-            glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
             ImGui::Render();
             ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
  
