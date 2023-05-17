@@ -80,11 +80,16 @@ int main( )
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-		
-		ShaderLoader vs(VERTEX_SHADER, "shaders/shader.vs");
-		auto program = vs.getProgram();
+		auto program = glCreateProgram();
+		ShaderLoader vs(VERTEX_SHADER, "shaders/shader.vs", program);
 		ShaderLoader fs(FRAGMENT_SHADER, "shaders/shader.fs", program);
+		
+		glLinkProgram(program);
+		glValidateProgram(program);
 		glUseProgram(program);
+
+	    	
+
 
 	do{
 		// Clear the screen

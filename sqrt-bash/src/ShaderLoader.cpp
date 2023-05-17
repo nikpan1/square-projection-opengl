@@ -58,9 +58,20 @@ void ShaderLoader::Compile() {
 
 void ShaderLoader::Create() {
     glAttachShader(program, id);
-
-    glLinkProgram(program);
-    glValidateProgram(program);
+    //glLinkProgram(program);
+    //glValidateProgram(program);
 
     glDeleteShader(id);
+}
+
+
+std::ostream& operator<<(std::ostream& os,
+    const ShaderLoader& obj) {
+    os << "ShaderLoader: \n" <<
+        "type: " << obj.type <<
+        "\npath=" << obj.path <<
+        "\nid=" << obj.id <<
+        "\nsource:\n" << obj.source << "\n\n";
+
+    return os;
 }
